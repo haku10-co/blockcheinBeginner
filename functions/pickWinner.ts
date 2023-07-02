@@ -1,6 +1,5 @@
 import { Validator } from "../types/validator.ts";
 
-// バリデーターを一人くじで選ぶ
 export function pickWinner(): Validator {
   // 山田さん
   const v1: Validator = {
@@ -27,13 +26,30 @@ export function pickWinner(): Validator {
     token: 4,
   };
 
-  // くじの中身
-  const candidates = [v1, v2, v2, v3, v3, v3, v4, v4, v4, v4];
+  // バリデーターのリスト
+  const validators = [v1, v2, v3, v4];
 
-  // くじをランダムに1つ取り出す
-  const randomIndex = Math.floor(Math.random() * candidates.length);
-  const winner = candidates[randomIndex];
+  // 各バリデーターの選ばれる確率を計算
+  const totalTokenPower = validators.reduce((total, validator) => total + Math.pow(validator.token, (30 - validators.length / 100)), 0);
+  const probabilities = validators.map(validator => Math.pow(validator.token, (30 - validators.length / 100)) / totalTokenPower);
 
-  console.log(`${winner.addr} がバリデーターに選ばれました`);
-  return winner;
-}
+  // 乱数を生成
+  const random = Math.random();
+  
+  // 生成された乱数に基づいてバリデーターを選ぶ
+    // 省略...
+  
+    let cumulativeProbability = 0.0;
+    for (let i = 0; i < validators.length; i++) {
+      cumulativeProbability += probabilities[i];
+      if (random <= cumulativeProbability) {
+        console.log(`${validators[i].addr} がバリデーターに選ばれました`);
+        return validators[i];
+      }
+    }
+  
+    throw new Error("No validator could be selected. This should never happen.");
+  }
+  
+
+  // 全てのバリデーターがチェックされた後
